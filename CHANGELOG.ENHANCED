@@ -1,0 +1,44 @@
+diff.200604:
+- pat_search_buffer moved to a dynamic buffer
+- kigou, midas1, midas2, yomi, chk_connect moved to dynamic buffers
+- added boundary checks for chk_connect
+- added my_free() and my_strdup()
+- user-defined allocators
+
+diff.200605-2:
+- added many assert()'s
+
+diff.200605:
+- modified juman_sent() to ensure that next_pos is always re-evaluated, and to prevent possible bad reads and/or infinite loops
+- memset() for all connect_cache items to avoid memcheck reports for juman_lib.c:1825
+- cleanup in the code
+
+diff.200606-2:
+- transformed assert in juman_lib.c:2100 to an error
+
+diff.200606:
+- added boundary checks inside _print_homograph_path()
+- replaced two assert's by error handling code to handle invalid writes inside _print_homograph_path()
+
+diff.200607:
+- replaced fprintf(stderr, .. by calls to juman_log_err()
+- added juman_seterrlog() to override juman_log_err() default behaviour
+
+diff.200801:
+- fixed stack overflow
+
+diff.200808:
+- fixed stack overflow by adding a missing return
+
+diff.200811:
+- fxed weird -200808 regression "juman_log_err_" vs. "juman_log_err" misdefined, leading to segv when logging an error (!)
+
+diff.200903-2:
+- ensure that AMD64-WIN64 is built with -Zp8 and add juman_context_size_internal()/juman_context_size_internal_options() for runtime check
+
+diff.200903:
+- added juman_context_size() to estimate the internal context size, fixed minor recycling bug
+
+diff.200909:
+- replaced all assert() inside through_word() (juman_lib.c:1139 especially) by my_assert()
+
