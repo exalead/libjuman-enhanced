@@ -1,4 +1,4 @@
-# 	$Id: Juman.pm,v 1.2 2005/08/24 13:55:47 kawahara Exp $	
+# 	$Id: Juman.pm,v 1.6 2008/08/06 01:54:39 kawahara Exp $	
 
 package Juman;
 require 5.004_04; # For base pragma.
@@ -152,7 +152,7 @@ TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 =cut
 
 # バージョン表示
-$VERSION = '0.5.1';
+$VERSION = '0.5.7';
 
 # カスタマイズ用変数
 %DEFAULT =
@@ -183,7 +183,8 @@ sub new {
     if( @_ == 1 ){
 	# 旧バージョンの形式で呼び出された場合の処理
 	my( $argv ) = @_;
-	$this->setup( { 'option' => $argv }, \%DEFAULT );
+	$this->setup( $argv, \%DEFAULT );
+#	$this->setup( { 'option' => $argv }, \%DEFAULT );
     } else {
 	# 新しい形式で呼び出された場合の処理
 	my( %option ) = @_;
@@ -197,16 +198,49 @@ sub new {
     $this;
 }
 
+# EUC-JPの3バイトコードを〓に変換
+sub conv_3bytecode_to_geta {
+    my ($buf) = @_;
+    my ($ret_buf);
+
+    while ($buf =~ /([^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/g) {
+	my $chr = $1;
+	if ($chr =~ /^\x8f/) { # 3byte code (JISX0212)
+	    $ret_buf .= '〓';
+	}
+	else {
+	    $ret_buf .= $chr;
+	}
+    }
+
+    return $ret_buf;
+}
+
 sub juman_lines {
     my( $this, $str ) = @_;
     my $socket  = $this->open();
     my $pattern = $this->pattern();
     my @buf;
+
+    # UTFフラグをチェックする
+    if (utf8::is_utf8($str)) {
+	require Encode;
+	# euc-jpにない文字とJISX0212補助漢字(3バイト)は〓に変換
+	$str = &conv_3bytecode_to_geta(Encode::encode('euc-jp', $str, sub {'〓'}));
+	$this->{input_is_utf8} = 1;
+    }
+    else {
+	$this->{input_is_utf8} = 0;
+    }
+
     # プロセスに文を送信する
     $str =~ s/[\r\n\f\t]*$/\n/s;
     $socket->print( $str );
     # 解析結果を読み出す
     while( defined( $str = $socket->getline ) ){
+	if ($this->{input_is_utf8}) {
+	    $str = Encode::decode('euc-jp', $str);
+	}
 	push( @buf, $str );
 	last if $str =~ /$pattern/;
     }

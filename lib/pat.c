@@ -298,7 +298,7 @@ void pat_insert(DIC_FILE_ENTRY *f,
   int in_hash;
   int buffer_length;
   int key_length;
-  char key[500];
+  char key[1000];
   char buffer[50000]; /* 汎用バッファ */
   char *strtoktmp = NULL;
 
@@ -416,10 +416,10 @@ int pat_bits(char *string, int cbit, int len)
 int hash_check_proc(DIC_FILE_ENTRY *f, long index, char *buf) {
   /* キャッシュ無しの場合 */
 #ifndef USE_HASH
-  strcpy(buf, get_line(f, index));
+  strcpy(buf, get_line(f,index));
   return(0);
 #else
-  char *data,key[20];
+  char *data,key[40];
   long num_of_deleted = 0; /* 消された数 */
   int i;
 
@@ -481,7 +481,7 @@ const char *get_line(DIC_FILE_ENTRY *f, long pos){
 
 #else
     if(fseek(f->data.fp, pos, 0) == 0){
-      static char buf[1000];
+      static char buf[2000];
       if(NULL == fgets(buf,sizeof(buf),f->data.fp))
 	return NULL;
       return buf;
@@ -506,9 +506,9 @@ void show_pat(pat_node *top_ptr, FILE *out_to, char *prefix)
 #if 0
   long idx = -1;
   pat_index_list *t_ptr;
-  char word[100];
-  char pftmp[100];
-  char prefix_keep[100];
+  char word[200];
+  char pftmp[200];
+  char prefix_keep[200];
   char *strtoktmp = NULL;
 
   word[0] = '\0';

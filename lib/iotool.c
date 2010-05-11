@@ -52,6 +52,8 @@ JCONTEXT *juman_create_context() {
   
   ctx->String_max = 0;
   ctx->String = NULL;
+  ctx->NormalizedString_max = 0;
+  ctx->NormalizedString = NULL;
   ctx->error = 0;
   ctx->error_string = NULL;
   ctx->max_level = 0;
@@ -93,8 +95,11 @@ void juman_destroy_context(JCONTEXT *ctx) {
   if (ctx != NULL) {
     if (ctx->String != NULL) {
       my_free(ctx->String);
+      my_free(ctx->NormalizedString);
       ctx->String = NULL;
+      ctx->NormalizedString = NULL;
       ctx->String_max = 0;
+      ctx->NormalizedString_max = 0;
     }
     if (ctx->OutputAV != NULL) {
 /*       int i; */
@@ -173,6 +178,7 @@ void juman_destroy_context(JCONTEXT *ctx) {
 size_t juman_context_size(JCONTEXT *ctx) {
 #define ARR_SIZE(BUFF, SIZE) ( (SIZE)*sizeof(BUFF[0]) )
   return ARR_SIZE(ctx->String, ctx->String_max)
+    + ARR_SIZE(ctx->NormalizedString, ctx->NormalizedString_max)
     + ARR_SIZE(ctx->OutputAV, ctx->OutputAVmax)
     + ARR_SIZE(ctx->pat_buffer, ctx->pat_buffer_max)
     + ARR_SIZE(ctx->connect_cache, ctx->connect_cache_max)
@@ -199,6 +205,8 @@ size_t juman_context_size_internal_options() {
 void juman_clear_context(JCONTEXT *ctx) {
   if (ctx->String != NULL)
     ctx->String[0] = '\0';
+  if (ctx->NormalizedString != NULL)
+    ctx->NormalizedString[0] = '\0';
 /*   if (ctx->OutputAV != NULL && ctx->OutputAVnum > 0) { */
 /*     int i; */
 /*     for(i = 0 ; i < ctx->OutputAVnum ; i++) { */

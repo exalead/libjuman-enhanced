@@ -583,8 +583,7 @@ int recognize_repetition(char *key, char *rslt, int orig_code)
 {
     int i, len, code, next_code, weight, con_tbl;
     int key_length = strlen(key); /* キーの文字数を数えておく */
-    U_CHAR *buf, *midasi = NULL;
-    int midasi_len = 0;
+    U_CHAR *buf, midasi[50000/*LENMAX*/];
 
     code = orig_code;
     for (len = 2; len < 5; len++) {
@@ -607,14 +606,7 @@ int recognize_repetition(char *key, char *rslt, int orig_code)
 	}
 
 	if (!strncmp(key, key + len * 2, len * 2)) {
-            if (midasi_len < len*4 + 1) {
-              midasi_len = len*4 + 1;
-              if (midasi == NULL) {
-                midasi = my_alloc(midasi_len);
-              } else {
-                midasi = my_realloc(midasi, midasi_len);
-              }
-            }
+	    
 	    strncpy(midasi, key, len * 4);
  	    midasi[len * 4] = '\0';
 	    buf = midasi;	    
@@ -665,9 +657,6 @@ int recognize_repetition(char *key, char *rslt, int orig_code)
 	    strcpy(rslt, "\"自動認識\"\n");
 	    return len;
 	}
-    }
-    if (midasi != NULL) {
-      my_free(midasi);
     }
 }
 

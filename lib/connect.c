@@ -66,6 +66,8 @@ void connect_table(FILE *fp_out)
 	      != NULL ) break;
 	  if ( (fp = pathfopen(TABLEFILE, "r", JumanPath, tablefile_path))
 	      != NULL ) break;
+	  if ( (fp = pathfopen(TABLEFILE, "r", "../dic/", tablefile_path)) /* for compilation */
+	      != NULL ) break;
 	  error(OpenError, "can't open", TABLEFILE, ".", EOA);
      }
 
@@ -179,7 +181,8 @@ int check_table_for_undef(int hinsi, int bunrui)
 
      for ( i=0; i<TBL_NUM; i++ )
        if ( rensetu_tbl[i].hinsi == hinsi &&
-            rensetu_tbl[i].bunrui == bunrui ) {
+            rensetu_tbl[i].bunrui == bunrui &&
+	    rensetu_tbl[i].goi == NULL ) {
 	    return i;
        }
      return -1;

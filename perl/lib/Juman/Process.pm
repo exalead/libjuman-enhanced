@@ -1,4 +1,4 @@
-# $Id: Process.pm,v 1.1.1.1 2005/06/28 04:25:15 kuro Exp $
+# $Id: Process.pm,v 1.4 2007/08/16 05:29:43 murawaki Exp $
 package Juman::Process;
 require 5.000;
 use English qw/ $PERL_VERSION /;
@@ -145,7 +145,7 @@ sub open_remote_socket {
 				     Proto => 'tcp' )
 	or die "Can't connect server: host=$host, port=$port\n";
     $sock->timeout( $this->{OPTION}->{timeout} );
-    &set_encoding( $sock );
+#    &set_encoding( $sock );
 
     # サーバーの greeting message を確認する
     my $res;
@@ -208,7 +208,10 @@ sub close {
     } elsif( $fh = $this->{SOCKET}->{LOCAL} ){
 	if( $fh->alive ){
 	    $fh->close;
-	    $fh->alive;			# Call waitpid() to avoid zombie.
+	    if ( $fh->alive ) {
+		# Call waitpid() to avoid zombie.
+		$fh->kill;
+	    }
 	}
     }
     delete $this->{SOCKET};

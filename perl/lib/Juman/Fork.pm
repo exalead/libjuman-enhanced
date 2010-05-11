@@ -1,4 +1,4 @@
-# $Id: Fork.pm,v 1.1.1.1 2005/06/28 04:25:15 kuro Exp $
+# $Id: Fork.pm,v 1.2 2006/10/31 06:44:50 shibata Exp $
 package Juman::Fork;
 require 5.004_04; # For base pragma.
 use English qw/ $PERL_VERSION /;
@@ -126,8 +126,8 @@ sub new {
 	    # 親プロセス側の処理
 	    $read->reader;
 	    $write->writer;
-	    &set_encoding( $read );
-	    &set_encoding( $write );
+#	    &set_encoding( $read );
+#	    &set_encoding( $write );
 	    $this = {
 		     PID     => $pid,
 		     READ    => $read,

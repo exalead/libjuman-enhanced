@@ -1,8 +1,9 @@
-# $Id: MList.pm,v 1.1.1.1 2005/06/28 04:25:15 kuro Exp $
+# $Id: MList.pm,v 1.7 2009/10/13 13:06:52 murawaki Exp $
 package Juman::MList;
 require 5.003_07; # For UNIVERSAL->isa().
 use strict;
 use base qw/ Juman::KULM::MList /;
+use Encode;
 
 =head1 NAME
 
@@ -105,11 +106,37 @@ sub spec {
     my $str;
     for my $mrph ( $this->mrph_list() ){
 	$str .= $mrph->spec();
-	for my $doukei ( $mrph->doukei() ){
-	    $str .= '@ ' . $doukei->spec();
+
+	# KNP::Morpheme は fstring に同形が埋め込まれている
+	# spec と repname の実装は straightforward ではない
+	# KNP::MList を作って処理すべき
+	if ( !defined $this->{fstring} ){
+	    for my $doukei ( $mrph->doukei() ){
+		$str .= '@ ' . $doukei->spec();
+	    }
 	}
     }
     $str;
+}
+
+=item repname
+
+形態素列の代表表記を返す．
+
+=cut
+sub repname {
+    my ( $this ) = @_;
+    my $pat = '正規化代表表記';
+    if( utf8::is_utf8( $this->fstring ) ){
+	$pat = decode('euc-jp', $pat);
+    }
+
+    if ( defined $this->{fstring} ){
+	if ($this->{fstring} =~ /<$pat:([^\>]+)>/){
+	    return $1;
+	}
+    }
+    return undef;
 }
 
 =back

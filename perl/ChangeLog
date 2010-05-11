@@ -1,3 +1,77 @@
+2008-08-06  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* lib/Juman.pm:
+	Transform 3-byte codes of JISX0212 to GETA (this is a treatment for garbled copyright characters).
+
+2008-07-22  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* lib/Juman.pm:
+	Transform undefined characters to GETA.
+
+2008-03-05  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* lib/Juman/MList.pm:
+	Modified repname() to extract repnames from KNP results.
+
+2008-01-22  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* lib/Juman/Morpheme.pm:
+	意味情報を追加するメソッドpush_imisを追加
+
+2007-11-13  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* lib/Juman/Hinsi.pm:
+	Adapted get_hinsi_id, get_bunrui_id, get_type_id and get_form_id to utf8_flag.
+
+2007-08-22  Ryohei Sasano  <ryohei@nlp.kuee.kyoto-u.ac.jp>
+
+	* lib/Juman/Morpheme.pm:
+	メソッドrepnamesに引数(≠0)を与えると
+	音訓解消した場合の曖昧性は無視するように変更
+
+2007-08-22  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* lib/Juman/MList.pm:
+	コードを整理
+	
+	* lib/Juman/Morpheme.pm:
+	メソッドrepnamesを追加
+
+2007-08-13  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* lib/Juman/MList.pm:
+	関数repnameで、「?」で連結する際にsortするように変更
+
+2007-07-18  MURAWAKI Yugo  <murawaki@nlp.kuee.kyoto-u.ac.jp>
+
+	* lib/Juman/Process.pm: close 時にまだ生きている子プロセスを殺す
+
+2006-11-01  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* Katuyou.pm, MList.pm, Morpheme.pm:
+	代表表記がない活用語の代表表記を正しく生成できるように修正
+
+2006-10-31  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* t/60-hinsi.t, t/70-katuyou.t:
+	deleted the tests about 'katuyou2' and 'katuyou2_id'
+
+2006-10-26  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* Morpheme.pm, MList.pm: 代表表記(列)を返すメソッドrepnameを追加
+
+2006-06-16  Tomohide Shibata  <shibata@kc.t.u-tokyo.ac.jp>
+
+	* Encode.pm: set_encodingを修正
+
+2006-05-02  Tomohide Shibata  <shibata@kc.t.u-tokyo.ac.jp>
+
+	* Morpheme.pm: メソッドidにおいて、mrphのidが0の時にundefを返すバグを修正
+
+2006-04-19  Tomohide Shibata  <shibata@kc.t.u-tokyo.ac.jp>
+
+	* 60-hinsi.t: get_form, get_form_idのテストを削除
+
 2005-04-19  Tomohide Shibata  <shibata@kc.t.u-tokyo.ac.jp>
 
 	* Juman.pm: change the default option from '-e -B' to '-e2 -B'

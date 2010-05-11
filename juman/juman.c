@@ -15,6 +15,7 @@
 #endif
 
 #include	<juman.h>
+#include	<const.h>
 #include	<juman_lib.h>
 
 /*
@@ -145,8 +146,9 @@ void juman_standalone(void)
 #endif
     JCONTEXT        *ctx = juman_create_context();
     ctx->String = (U_CHAR*) malloc((ctx->String_max = 50000));
-   
-    if (!juman_init_rc(Jumanrc_Fileptr)) {  /* rcfile関係の初期化 */
+    ctx->NormalizedString = (U_CHAR*) malloc((ctx->String_max));
+
+    if (!juman_init_rc(Jumanrc_Fileptr)) {	/* rcfile関係の初期化 */
 	fprintf(stderr, "error in .jumanrc\n");
 	exit(0);
     }
@@ -163,19 +165,13 @@ void juman_standalone(void)
 	    continue;
 	}
 #ifdef _WIN32
-	eucstr = toStringEUC(ctx->String);
+	eucstr = stringEUC(ctx->String);
 	strcpy(ctx->String, eucstr);
 	free(eucstr);
 #endif       
-	if (JOpt.Show_Opt_tag[0])
-	    if (!strncmp(ctx->String , JOpt.Show_Opt_tag ,
-                         strlen(JOpt.Show_Opt_tag))) {
-		fprintf(stdout, "%s", ctx->String);
-		continue;
-	    }
 	
 	length = strlen(ctx->String);
-	if (length == ctx->String_max-1 && (ctx->String)[length - 1] != '\n') {
+	if (length == ctx->String_max-1 && ctx->String[length - 1] != '\n') {
 	    fprintf(stderr, "Too long input string (%s).\n",
                     ctx->String);
 	    continue;
@@ -190,6 +186,13 @@ void juman_standalone(void)
 	    else
               ctx->String[length] = '\0';
 	}
+
+	if (JOpt.Show_Opt_tag[0])
+	    if (!strncmp(ctx->String , JOpt.Show_Opt_tag ,
+                         strlen(JOpt.Show_Opt_tag))) {
+		fprintf(stdout, "%s JUMAN:%s\n", ctx->String, VERSION);
+		continue;
+	    }
 
 	if (juman_sent(ctx) == TRUE) {
 	    switch (JOpt.Show_Opt1) {
@@ -239,6 +242,9 @@ void option_proc(int argc, char **argv)
     JOpt.Show_Opt_tag[0] = '\0';
     JOpt.Show_Opt_fmt[0] = '\0';
     JOpt.Show_Opt_debug = 0;
+    JOpt.Vocalize_Opt = 1;
+    JOpt.Repetition_Opt = 1;
+    JOpt.Normalized_Opt = 1;
 
     for ( i=1; i<argc; i++ ) {
 	if ( argv[i][0] != '-' ) {
@@ -288,6 +294,9 @@ else {
 	    else if ( argv[i][1] == 'v' ) juman_version();
 	    else if ( argv[i][1] == 'd' ) JOpt.Show_Opt_debug = 1;
 	    else if ( argv[i][1] == 'D' ) JOpt.Show_Opt_debug = 2;
+	    else if ( argv[i][1] == 'V' ) JOpt.Vocalize_Opt = 0;
+	    else if ( argv[i][1] == 'R' ) JOpt.Repetition_Opt = 0;
+	    else if ( argv[i][1] == 'L' ) JOpt.Normalized_Opt = 0;
 
 #if ! defined _WIN32
 	    /* サーバーモード用のオプションの取扱い */
@@ -347,8 +356,8 @@ void juman_help()
     fprintf(stderr, "usage: juman -[b|B|m|p|P] -[f|c|e|E] [-i string] [-r rc_file]\n");
 #endif
     fprintf(stderr, "\n");
-    fprintf(stderr, "             -b : show best path (default)\n");
-    fprintf(stderr, "             -B : show best path including homographs\n");
+    fprintf(stderr, "             -b : show best path\n");
+    fprintf(stderr, "             -B : show best path including homographs (default)\n");
     fprintf(stderr, "             -m : show all morphemes\n");
     fprintf(stderr, "             -p : show all pathes\n");
     fprintf(stderr, "             -P : show all pathes by -B style\n");
@@ -356,7 +365,7 @@ void juman_help()
     fprintf(stderr, "             -f : show morpheme data (default)\n");
     fprintf(stderr, "             -c : show coded morpheme data\n");
     fprintf(stderr, "             -e : show entire morpheme data\n");
-    fprintf(stderr, "             -e2 : -e plus semantics data\n");
+    fprintf(stderr, "             -e2 : -e plus semantics data (default)\n");
     fprintf(stderr, "             -ef format: show formatted morpheme data:\n");
     fprintf(stderr, "                   %%g  : kigou\n");
     fprintf(stderr, "                   %%m0 : midasi\n");
@@ -376,7 +385,11 @@ void juman_help()
     fprintf(stderr, "                   %%%% : %% unescaping\n");
     fprintf(stderr, "                   \\[r|n|f|v] : \\ unescaping\n");
     fprintf(stderr, "             example (-e2 equivalent): -ef \"%g%m1 %y %m2 %hs %hn %bs %bn %k1s %k1n %k2s %k2n %i\\n\"\n");
-    fprintf(stderr, "             -E : -e plus location and semantics data\n\n");
+    fprintf(stderr, "             -E : -e plus location and semantics data\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "             -V : not search voiceless morphemes\n");
+    fprintf(stderr, "             -R : not recognize adverb automatically\n");
+    fprintf(stderr, "             -L : not search normalized lowercase\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "             -i : ignore an input line startig with 'string'\n");
     fprintf(stderr, "             -r : use 'rc_file' as '.jumanrc'\n");
@@ -395,6 +408,6 @@ void juman_help()
 
 void juman_version()
 {
-    fprintf(stderr, "%s %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+    fprintf(stderr, "%s %s\n", PACKAGE_NAME, VERSION);
     exit(0);
 }

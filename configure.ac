@@ -1,9 +1,9 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(juman, 5.1, nl-resource@kc.t.u-tokyo.ac.jp)
+AC_INIT(juman, 6.0, nl-resource@nlp.kuee.kyoto-u.ac.jp)
 AC_PREREQ(2.53)
-AM_INIT_AUTOMAKE
-# AC_REVISION($Revision: 1.3 $)
+# AC_REVISION($Revision: 1.9 $)
 AC_CONFIG_SRCDIR([juman/juman.c])
+AM_INIT_AUTOMAKE(${PACKAGE_NAME}, ${PACKAGE_VERSION})
 AM_CONFIG_HEADER([config.h])
 
 # Checks for programs.
@@ -59,5 +59,5 @@ eval RC_DEFAULT=`eval echo "$RC_DEFAULT"`
 AC_DEFINE_UNQUOTED(RC_DEFAULT, "$RC_DEFAULT", [Define to the location of "jumanrc" file.])
 
 
-AC_CONFIG_FILES([Makefile lib/Makefile makemat/Makefile makeint/Makefile makepat/Makefile juman/Makefile dic/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile lib/Makefile makemat/Makefile makeint/Makefile makepat/Makefile juman/Makefile dic/Makefile autodic/Makefile doc/Makefile])
 AC_OUTPUT

@@ -59,6 +59,7 @@ static char *data_buff = NULL;
 static int data_column = 0;
 static int data_buff_cur = 0;
 
+
 /* Parameter Definition from juman.c
    NACSIS µÈ²¬
 */
@@ -222,6 +223,8 @@ int option_proc_for_server(JCONTEXT* ctx, int argc, char **argv)
     JOpt.Show_Opt_jumanrc = 0;
     JOpt.Show_Opt_tag[0] = '\0';
     JOpt.Show_Opt_debug = 0;
+    JOpt.Vocalize_Opt = 1;
+    JOpt.Repetition_Opt = 1;
     
     for (i = 1; i < argc; i++ ) {
 	if (argv[i][0] != '-') {
@@ -542,6 +545,7 @@ int juman_server(argv, port, foreground)
     int pid, i;
     JCONTEXT        *ctx = juman_create_context();
     ctx->String = (U_CHAR*) malloc((ctx->String_max = 50000));
+    ctx->NormalizedString = (U_CHAR*) malloc((ctx->String_max));
     
     if (!juman_init_rc(Jumanrc_Fileptr)) {	/* rcfile´Ø·¸¤Î½é´ü²½ */
 	fprintf(stderr, "error in .jumanrc\n");

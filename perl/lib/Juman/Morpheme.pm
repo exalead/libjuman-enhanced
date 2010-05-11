@@ -1,11 +1,11 @@
-# $Id: Morpheme.pm,v 1.1.1.1 2005/06/28 04:25:15 kuro Exp $
+# $Id: Morpheme.pm,v 1.6 2008/01/21 18:34:13 shibata Exp $
 package Juman::Morpheme;
 require 5.004_04; # For base pragma.
 use Carp;
 use strict;
 use base qw/ Juman::Katuyou Juman::KULM::Morpheme /;
 use vars qw/ @ATTRS /;
-
+use Encode;
 =head1 NAME
 
 Juman::Morpheme - 形態素オブジェクト in Juman
@@ -177,6 +177,135 @@ sub imis {
     shift->{imis};
 }
 
+=item push_imis
+
+意味情報を追加する．
+
+=cut
+sub push_imis {
+    my ($this, @imis) = @_;
+
+    if ($this->{imis} eq 'NIL') {
+	$this->{imis} = '"' . join(' ', @imis) . '"';
+    }
+    else {
+	my $current_imis = $this->{imis};
+	$current_imis =~ s/\"$//;
+
+	$this->{imis} = $current_imis . ' ' . join(' ', @imis) . '"';
+    }
+}
+
+=item repname
+
+形態素の代表表記を返す．
+
+=cut
+sub repname {
+    my ( $this ) = @_;
+    my $pat = '代表表記';
+    if( utf8::is_utf8( $this->midasi ) ){
+	$pat = decode('euc-jp', $pat);
+    }
+
+    if ( defined $this->{imis} ){
+	if ($this->{imis} =~ /$pat:([^\"\s]+)/){
+	    return $1;
+	}
+    }
+    return undef;
+}
+
+=item repnames
+
+形態素の代表表記（曖昧性がある場合は「?」で連結）を返す．
+引数(≠0)を与えると、音訓解消した場合の曖昧性は無視する.
+
+=cut
+sub repnames {
+    my ( $this, $flag ) = @_;
+
+    my $pat = '音訓解消';
+    if( utf8::is_utf8( $this->midasi ) ){
+	$pat = decode('euc-jp', $pat);
+    }
+
+    my ( @ret );
+    my $org_rep = $this->repname();
+    my $rep = $org_rep ? $org_rep : $this->make_repname(); # なければ作る
+    push( @ret, $rep ) if $rep;
+    if ( $org_rep && # 作った場合は同形異義語についても同じになるのでスキップ
+	 # $flagが立っている場合は音訓解消した場合の曖昧性は無視
+	 !( $flag && $this->spec =~ /<$pat>/ )) { 
+	push @ret, $this->get_doukei_reps;
+    }
+
+    my ( %scan ); # 重複を削除
+    join( '?', grep(!$scan{$_}++, sort @ret) );
+
+}
+
+=item get_doukei_reps
+
+形態素の同型異義語の代表表記を返す．
+
+=cut
+sub get_doukei_reps {
+    my ( $this ) = @_;
+
+    my ( @reps );
+    for my $doukei ( $this->doukei() ) { # 同形異義語 (@)
+	my $rep = $doukei->repname();
+	$rep = $doukei->make_repname() unless $rep;
+	push( @reps, $rep ) if $rep;
+    }
+
+    return @reps;
+}
+
+=item make_repname
+
+形態素の代表表記を作る．
+
+=cut
+sub make_repname {
+    my ( $this ) = @_;
+    my $basic_form_str = '基本形';
+    if( utf8::is_utf8( $this->midasi ) ){
+	$basic_form_str = decode( 'euc-jp', $basic_form_str );
+    }
+
+    # 活用語なら基本形に戻す
+
+    my $new_m = $this->change_katuyou2( $basic_form_str );
+    if ( $new_m ){ # 活用語
+	return $new_m->genkei . '/' . $new_m->yomi;
+    }
+    else {
+	return $this->genkei . '/' . $this->yomi;
+    }
+}
+
+=item kanou_dousi
+
+形態素の可能動詞を返す．
+
+=cut
+sub kanou_dousi {
+    my ( $this ) = @_;
+    my $pat = '可能動詞';
+    if( utf8::is_utf8( $this->midasi ) ) {
+	$pat = decode('euc-jp', $pat);
+    }
+
+    if ( defined $this->{imis} ) {
+	if ($this->{imis} =~ /$pat:([^\"\s]+)/) {
+	    return $1;
+ 	}
+    }
+    return undef;
+}
+
 =item push_doukei( DOUKEI )
 
 同形異義語 I<DOUKEI> を登録する．
@@ -209,7 +338,7 @@ sub doukei {
 =cut
 sub id {
     my( $this ) = @_;
-    $this->{id} || undef;
+    $this->{id};
 }
 
 =item spec

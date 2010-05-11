@@ -294,6 +294,7 @@ typedef		struct		_CELLTABLE {
 	構造体 MORPHEME はなくなった */
 typedef         struct          _MRPH {
      U_CHAR             midasi[MIDASI_MAX];
+     U_CHAR             midasi2[MIDASI_MAX];
      U_CHAR             yomi[YOMI_MAX];
      U_CHAR             imis[IMI_MAX];
      CELL		*imi;
@@ -364,6 +365,7 @@ typedef struct _connect_cost {
     short p_no;     /* PROCESS_BUFFER のインデックス */
     short pos;
     int cost;     /* コスト */
+    int dakuon_flag;
 } CONNECT_COST;
 
 /*
@@ -396,10 +398,12 @@ typedef struct _cost_omomi  {
 typedef         struct          _JCONTEXT {
   /* juman_lib.c */
   /* Input */
-  int String_max;                      /* suggested LENMAX: 50000*/
+  int String_max;                      /* suggested LENMAX: 50000 */
   U_CHAR *String;
+  int NormalizedString_max;            /* >= String_max ; suggested LENMAX: 50000 */
+  U_CHAR *NormalizedString;
   int error;
-  const char *error_string;
+  char *error_string;
   int max_level;
   
   /* Output */
@@ -456,6 +460,9 @@ typedef struct _JOPTIONS {
   int		Show_Opt_jumanrc;
   int		Show_Opt_debug;
   char		Show_Opt_fmt[FMTOPT_MAX];
+  int		Vocalize_Opt;
+  int		Repetition_Opt;
+  int		Normalized_Opt;
   
   int		undef_hinsi;
   int		undef_kata_bunrui, undef_alph_bunrui, undef_etc_bunrui;
