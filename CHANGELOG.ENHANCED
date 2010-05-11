@@ -42,3 +42,5 @@ diff.200903:
 diff.200909:
 - replaced all assert() inside through_word() (juman_lib.c:1139 especially) by my_assert()
 
+diff.201005:
+- upgraded to Juman 6.0
