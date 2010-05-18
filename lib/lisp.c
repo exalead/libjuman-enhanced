@@ -486,7 +486,7 @@ CELL *s_read_atom(FILE *fp)
      CELL *cell;
      U_CHAR *c;
      int n;
-#ifdef _WIN32
+#if (defined(_WIN32) && (!defined(JUMAN_NO_EUC_CONVERSION)))
     char *eucstr;
 #endif
 
@@ -503,7 +503,7 @@ CELL *s_read_atom(FILE *fp)
 	  error_in_lisp();
      }
 
-#ifdef _WIN32
+#if (defined(_WIN32) && (!defined(JUMAN_NO_EUC_CONVERSION)))
 	eucstr = toStringEUC(Buffer);
 	strcpy(Buffer, eucstr);
 	my_free(eucstr);

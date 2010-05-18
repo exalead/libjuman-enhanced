@@ -1497,16 +1497,24 @@ void my_fprintf(FILE* output, const char *fmt, ...)
 {
     va_list  ap;
     char     buf[1024];
+#ifndef JUMAN_NO_EUC_CONVERSION
     char     *sjisstr;
-
+#endif
+    
     va_start(ap,fmt);
     vsprintf(buf,fmt,ap);
     va_end(ap);
 
     /* SJIS に変更して出力 */
+#ifndef JUMAN_NO_EUC_CONVERSION
     sjisstr = toStringSJIS(buf);
     fwrite(sjisstr,sizeof(char),strlen(sjisstr),output);
+#else
+    fwrite(buf,sizeof(char),strlen(buf),output);
+#endif
+#ifndef JUMAN_NO_EUC_CONVERSION
     my_free(sjisstr);
+#endif
 }
 #endif
 

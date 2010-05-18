@@ -44,3 +44,4 @@ diff.200909:
 
 diff.201005:
 - upgraded to Juman 6.0
+- on WIN32, JUMAN_NO_EUC_CONVERSION allows to use regular EUC data instead of SJIS (same as Unix)

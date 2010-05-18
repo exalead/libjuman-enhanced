@@ -141,7 +141,7 @@ int readtonl(FILE *fp)
 void juman_standalone(void)
 {
     int length;
-#ifdef _WIN32
+#if (defined(_WIN32) && (!defined(JUMAN_NO_EUC_CONVERSION)))
     char *eucstr;
 #endif
     JCONTEXT        *ctx = juman_create_context();
@@ -164,7 +164,7 @@ void juman_standalone(void)
 	    readtonl(stdin);
 	    continue;
 	}
-#ifdef _WIN32
+#if (defined(_WIN32) && (!defined(JUMAN_NO_EUC_CONVERSION)))
 	eucstr = stringEUC(ctx->String);
 	strcpy(ctx->String, eucstr);
 	free(eucstr);
