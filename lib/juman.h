@@ -488,10 +488,8 @@ JEXPORT void juman_destroy_context(JCONTEXT *ctx);
 JEXPORT void juman_clear_context(JCONTEXT *ctx);
 JEXPORT void juman_seterrlog(void (*fun)(const char* format, ...));
 JEXPORT size_t juman_context_size(JCONTEXT *ctx);
-#ifdef _WIN32
 JEXPORT size_t juman_context_size_internal(void);
 JEXPORT size_t juman_context_size_internal_options(void);
-#endif
 
 JEXPORT FILE	*my_fopen(const char *filename, const char *mode);
 JEXPORT FILE	*my_fopen_silent(const char *filename, const char *mode);

@@ -183,7 +183,7 @@ char		Jumangram_Dirname[FILENAME_MAX];  /*k.n*/
 */
 
 static BOOL katuyou_process(JCONTEXT* ctx, int position, int *k,
-                            MRPH mrph, int *length, int normal_flag);
+                            MRPH mrph, int *length, const int normal_flag);
 
 /*
 ------------------------------------------------------------------------------
@@ -459,7 +459,7 @@ void read_class_cost(CELL *cell)
 	PROCEDURE: <katuyou_process>       >>> changed by T.Nakamura <<<
 ------------------------------------------------------------------------------
 */
-static BOOL katuyou_process(JCONTEXT* ctx, int position, int *k, MRPH mrph, int *length, int normal_flag)
+static BOOL katuyou_process(JCONTEXT* ctx, int position, int *k, MRPH mrph, int *length, const int normal_flag)
 {
      assert(mrph.katuyou1 >= 0);
      assert(*k >= 0 && *k < FORM_NO);
@@ -676,7 +676,7 @@ int recognize_repetition(char *key, char *rslt, int orig_code)
         PROCEDURE: <take_data>                  >>> Changed by yamaji <<<
 ------------------------------------------------------------------------------
 */
-int take_data(JCONTEXT* ctx, int pos, char **pbuf, int dakuon_flag, int normal_flag)
+int take_data(JCONTEXT* ctx, int pos, char **pbuf, const int dakuon_flag, const int normal_flag)
 {
     unsigned char    *s;
     int     i, k, f, num;
@@ -1523,6 +1523,8 @@ MRPH *prepare_path_mrph(JCONTEXT* ctx, int path_num , int para_flag)
     MRPH       	*mrph_p;
     int        	j;
 
+    assert(path_num >= 0 && path_num < ctx->process_buffer_max);
+    assert(ctx->p_buffer[path_num].mrph_p < ctx->mrph_buffer_max);
     mrph_p = &(ctx->m_buffer[ctx->p_buffer[path_num].mrph_p]);
 
     if (para_flag != 0 && is_through(mrph_p) == TRUE) return NULL;
@@ -1533,7 +1535,14 @@ MRPH *prepare_path_mrph(JCONTEXT* ctx, int path_num , int para_flag)
 	ctx->kigou[0] = '\0';
     assert(strlen(mrph_p->midasi) < MIDASI_MAX);
     strcpy(ctx->midasi1, mrph_p->midasi);
-    strcpy(ctx->midasi2, *mrph_p->midasi2 ? mrph_p->midasi2 : mrph_p->midasi);
+
+    /* Note (RX): *mrph_p->midasi2 causes invalid reads when JOpt.Vocalize_Opt
+       is not set */
+    if (!JOpt.Vocalize_Opt) {
+      strcpy(ctx->midasi2, mrph_p->midasi);
+    } else {
+      strcpy(ctx->midasi2, *mrph_p->midasi2 ? mrph_p->midasi2 : mrph_p->midasi);
+    }
     assert(strlen(mrph_p->yomi) < MIDASI_MAX);
     strcpy(ctx->yomi, mrph_p->yomi);
     if ( (mrph_p->katuyou1 > 0) && (mrph_p->katuyou2 > 0) ) {
@@ -2565,6 +2574,9 @@ int juman_sent(JCONTEXT* ctx)
     ctx->m_buffer[0].con_tbl = 0;
     ctx->m_buffer[0].weight = MRPH_DEFAULT_WEIGHT;
     strcpy(ctx->m_buffer[0].midasi , "(ʸƬ)");
+    ctx->m_buffer[0].midasi2[0] = '\0';  /* (added RX) */
+    ctx->m_buffer[0].yomi[0] = '\0';     /* (added RX) */
+    ctx->m_buffer[0].imis[0] = '\0';     /* (added RX) */
     ctx->m_buffer_num = 1;
     ctx->p_buffer_num = 1;
 

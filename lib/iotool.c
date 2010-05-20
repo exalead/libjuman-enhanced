@@ -192,7 +192,6 @@ size_t juman_context_size(JCONTEXT *ctx) {
 #undef ARR_SIZE
 }
 
-#ifdef _WIN32
 size_t juman_context_size_internal() {
   return sizeof(JCONTEXT);
 }
@@ -200,7 +199,6 @@ size_t juman_context_size_internal() {
 size_t juman_context_size_internal_options() {
   return sizeof(JOPTIONS);
 }
-#endif
 
 void juman_clear_context(JCONTEXT *ctx) {
   if (ctx->String != NULL)

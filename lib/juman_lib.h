@@ -59,8 +59,8 @@ JEXPORT void	realloc_mrph_buffer(JCONTEXT* ctx);
 JEXPORT void	realloc_process_buffer(JCONTEXT* ctx);
 JEXPORT void     read_class_cost(CELL *cell); /* k.n */
 JEXPORT int      search_all(JCONTEXT* ctx, int position);
-JEXPORT int      take_data(JCONTEXT* ctx, int pos, char **pbuf, int dakuon_flag, int normal_flag);
-JEXPORT char *	_take_data(JCONTEXT* ctx, char *s, MRPH *mrph, int dakuon_flag, int normal_flag);
+JEXPORT int      take_data(JCONTEXT* ctx, int pos, char **pbuf, const int dakuon_flag, const int normal_flag);
+JEXPORT char *	_take_data(JCONTEXT* ctx, char *s, MRPH *mrph, const int dakuon_flag, const int normal_flag);
 JEXPORT int 	numeral_decode(char **str);
 JEXPORT int 	numeral_decode2(char **str);
 JEXPORT void 	hiragana_decode(char **str, char *yomi);
